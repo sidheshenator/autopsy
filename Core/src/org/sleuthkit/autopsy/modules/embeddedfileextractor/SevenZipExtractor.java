@@ -510,8 +510,19 @@ class SevenZipExtractor {
                     } finally {
                         if (unpackStream != null) {
                             //record derived data in unode, to be traversed later after unpacking the archive
-                            unpackedNode.addDerivedInfo(unpackStream.getNumberOfBytesWritten(), !isDir,
-                                    0L, createtime, accesstime, modtime, localRelPath);
+                            if (size != null) {
+                                // unpackedNode.bytesWritten will not be set in
+                                // this case. Use 'size' which has been set
+                                // previously.
+                                unpackedNode.addDerivedInfo(size, !isDir,
+                                        0L, createtime, accesstime, modtime, localRelPath);
+                            } else {
+                                // since size is unknown, use
+                                // unpackStream.getNumberOfBytesWritten() to get
+                                // the size.
+                                unpackedNode.addDerivedInfo(unpackStream.getNumberOfBytesWritten(), !isDir,
+                                        0L, createtime, accesstime, modtime, localRelPath);
+                            }
                             unpackStream.close();
                         }
                     }
